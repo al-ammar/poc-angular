@@ -1,0 +1,53 @@
+<nz-table
+      [nzData]="listOfData"
+      [nzLoading]="settingValue.loading"
+      nzShowSizeChanger
+      [nzFrontPagination]="false"
+      [nzTotal]="total"
+      [nzPageSize]="pageSize"
+      [nzPageIndex]="pageIndex"
+      (nzQueryParams)="onQueryParamsChange($event)"
+    >
+      <thead>
+        <tr >
+          <th nzWidth="40px"  [nzLeft]="fixedColumn"></th>
+          <th
+            nzWidth="60px"
+            [(nzChecked)]="allChecked"
+            [nzLeft]="fixedColumn"
+            [nzIndeterminate]="indeterminate"
+            (nzCheckedChange)="checkAll($event)"
+          ></th>
+          <th [nzLeft]="fixedColumn" nzColumnKey="id" [nzSortFn]="true" >ID</th>
+          <th  nzColumnKey="name" [nzSortFn]="true" >Username</th>
+          <th>Description</th>
+          <th [nzRight]="fixedColumn">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngFor="let data of listOfData">
+          <tr>
+            <td [nzLeft]="fixedColumn"  [(nzExpand)]="data.expand!"></td>
+            <td
+              [nzLeft]="fixedColumn"
+              [(nzChecked)]="data.checked!"
+              (nzCheckedChange)="refreshStatus()"
+            ></td>
+            <td [nzLeft]="fixedColumn">{{ data.id }}</td>
+            <td>{{ data.userName! }}</td>
+            <td [nzEllipsis]="settingValue.ellipsis">{{ data.description }}</td>
+            <td [nzRight]="fixedColumn" [nzEllipsis]="settingValue.ellipsis">
+                   <nz-divider nzType="vertical"></nz-divider>
+
+                   <a (click)="deleteUser(data.id!)">Supprimer</a>
+
+                   <nz-divider nzType="vertical"></nz-divider>
+              <a (click)="updateUser(data.id!)">Modifier</a>
+            </td>
+          </tr>
+          <tr *ngIf="settingValue.expandable" [nzExpand]="data.expand!">
+            <span>{{ data.description }}</span>
+          </tr>
+        </ng-container>
+      </tbody>
+    </nz-table>

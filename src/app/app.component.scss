@@ -1,0 +1,142 @@
+// @import "../styles.scss";
+
+// * {
+//   font-family: 'lato', 'aria', sans-serif;
+// }
+
+// nz-layout.main-layout {
+//   height: 100vh;
+//   nz-sider {
+//     // background-color: white;
+//     width: 10%;
+//     .main-logo {
+//       width: 100%;
+//       max-width: 100%;
+//       a {
+//         display: block;
+//         img {
+//           width: 80%;
+//           margin: 0 auto;
+//           display: block;
+//           padding: 15px 0;
+//         }
+//       }
+//     }
+//     ul {
+//       padding-top: 20px;
+//       li {
+//         margin-bottom: 15px;
+//         height: 50px;
+//         line-height: 50px;
+//         span:not(.with-badge) {
+//           display: flex;
+//           align-items: center;
+//         }
+//         ::ng-deep .with-badge nz-badge span {
+//           display: flex;
+//           align-items: center;
+//         }
+//       }
+//     }
+//   }
+//   nz-layout {
+//     display: flex;
+//     flex-direction: column;
+//     nz-header {
+//       padding: 0;
+//       display: flex;
+//       color: white;
+//       .trigger {
+//         font-size: 18px;
+//         line-height: 64px;
+//         padding: 0 24px;
+//         cursor: pointer;
+//         // @include transition(color, 300ms, ease-out);
+//         // &:hover {
+//         //   color: $main-color;
+//         // }
+//       }
+//       .link-header a {
+//         font-weight: 700;
+//         font-size: 18px;
+//         text-decoration: none;
+//         color: white;
+//       }
+//       .space-up {
+//         flex: 1 1 auto;
+//       }
+//       .user-header {
+//         display: flex;
+//         padding: 0 24px;
+//         align-items: center;
+//         i {
+//           margin-right: 5px;
+//         }
+//       }
+//     }
+//     .content-router {
+//       flex-grow: 2;
+//       nz-content {
+//         // height: 100%;
+//         // margin: 70px;
+//         // padding: 5px;
+//          background-color: black;
+//       }
+//     }
+//     nz-footer {
+//       padding: 5px;
+//     }
+//   }
+// }
+
+.logo {
+  height: 32px;
+  margin: 16px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+nz-header {
+  background: #fff;
+  padding: 0;
+}
+
+nz-content {
+  margin: 0 16px;
+}
+
+nz-breadcrumb {
+  margin: 16px 0;
+}
+
+.inner-content {
+  padding: 24px;
+  background: #fff;
+  min-height: 360px;
+}
+
+nz-footer {
+  text-align: center;
+}
+
+
+// nz-content {
+//   min-height: 120px;
+//   line-height: 120px;
+// }
+
+// nz-layout {
+//   margin-bottom: 48px;
+// }
+
+// nz-layout nz-layout,
+// nz-layout:last-child {
+//   margin: 0;
+// }
+
+
+// .center-content {
+//   margin: auto;
+//   width: 50%;
+//   border: 3px solid green;
+//   padding: 10px;
+// }

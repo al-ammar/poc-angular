@@ -1,0 +1,36 @@
+<nz-layout *ngIf="canUserAccess && !showIFrame">
+  <nz-sider nzCollapsible nzWidth="200px">
+    <div class="logo"></div>
+    <ul nz-menu nzTheme="dark" nzMode="inline">
+      <li nz-menu-item [routerLink]="['/']"  >
+        <span nz-icon nzType="pie-chart"></span>
+        <span>Accueil</span>
+      </li>
+      <li nz-menu-item [routerLink]="['/users']" >
+        <span nz-icon nzType="pie-chart"></span>
+        <span>Liste utilisateur</span>
+      </li>
+      <li nz-menu-item (click)="logout()" >
+        <span nz-icon nzType="desktop"></span>
+        <span>Déconnexion</span>
+      </li>
+    </ul>
+  </nz-sider>
+  <nz-layout>
+    <nz-header></nz-header>
+    <nz-content>
+      <nz-breadcrumb>
+        <nz-breadcrumb-item>ACCUEIL</nz-breadcrumb-item>
+      </nz-breadcrumb>
+      <div class="inner-content">        
+        <router-outlet></router-outlet>
+      </div>
+
+    </nz-content>
+    <nz-footer>Design ©2022 Implement By @l@@</nz-footer>
+  </nz-layout>
+</nz-layout>
+
+<div *ngIf="showIFrame && !canUserAccess">
+  <app-login></app-login>
+</div>

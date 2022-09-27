@@ -1,0 +1,8 @@
+{
+  "/rest/*": {
+    "target": "http://localhost:8086",
+    "secure": false,
+    "bypass": "function(req, res, proxyOptions) {if (!navigator.onLine) { console.log('Skipping proxy for browser request.'); return ;}"    
+  }
+}
+  
