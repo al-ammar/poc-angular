@@ -1,11 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
 
 import { NzTableLayout, NzTablePaginationPosition, NzTablePaginationType, NzTableQueryParams, NzTableSize } from 'ng-zorro-antd/table';
 import { finalize, Subscription } from 'rxjs';
 import { User } from 'src/app/models/user';
 import { SharedService } from 'src/app/services/shared.service';
-import { ArrayUtils } from 'src/app/utils/ArrayUtils';
+import { Utils } from 'src/app/utils/ArrayUtils';
 
 @Component({
   selector: 'app-users',
@@ -13,18 +14,23 @@ import { ArrayUtils } from 'src/app/utils/ArrayUtils';
   styleUrls: ['./users.component.scss']
 })
 export class UsersComponent implements OnInit, OnDestroy {
-
+  public user?: User;
+  panel = 'Actions';
+  panelRecherche = 'Recherche personnalisée';
+  public searchForm!: UntypedFormGroup;
+  displayList = true;
+  displayActions = true;
+  displayCreation = false;
+  displayUpdate = false;
   pageSize = 10;
   pageIndex = 1;
-  total = 1;
+  total = 20;
   settingForm?: UntypedFormGroup;
-  listOfData:  User[] = [];
-  displayData:  User[] = [];
+  listOfData: User[] = [];
+  displayData: User[] = [];
   allChecked = false;
   indeterminate = false;
   fixedColumn = false;
-  scrollX: string | null = null;
-  scrollY: string | null = null;
   settingValue!: Setting;
 
   private subs: Subscription = new Subscription();
@@ -52,74 +58,75 @@ export class UsersComponent implements OnInit, OnDestroy {
     this.refreshStatus();
   }
 
-  getUsers():  void {
-    const data : User[] = [];
+  getUsers(pageIndex: number, pageSize: number, sortField: string | null, sortOrder: string | null): void {
+    const data: User[] = [];
     this.settingValue.loading = true;
-    this.service.getUsers()
-    .pipe(
-      finalize(() => {
-        this.settingValue.loading = false;
-        console.log('done getusers');
+    this.service.getUsers(pageIndex - 1, pageSize, sortField, sortOrder)
+      .pipe(
+        finalize(() => {
+          this.settingValue.loading = false;
+          this.settingValue.noResult = false;
+        })
+      ).subscribe({
+        next: (result: any) => {
+          this.listOfData = [];
+          this.listOfData.push(...result.data!.content!);
+          this.total = result.data!.totalElements!;
+        }
       })
-    ).subscribe({
-      next : (result : any)=>{
-        this.listOfData.push(...result.data!.content!);
-        this.total = 100;
-      }
-     })
   }
 
-  updateUser(index: any){
-    console.log(index);
+  updateUser(userToUpdate: User) {
+    this.user = userToUpdate;
+    this.displayList = false;
+    this.displayActions = false;
+    this.displayUpdate = true;
   }
 
-  deleteUser(index: string) : void{
+  onDoneUpdate(done: boolean) {
+    this.displayList = true;
+    this.displayActions = true;
+    this.displayUpdate = false;
+    this.user = new User();
+  }
+
+  deleteUser(index: string): void {
     this.settingValue.loading = true;
     this.service.deleteUser(index)
-    .pipe(
-      finalize(() => {
-        this.settingValue.loading = false;
-        console.log('done delete');
-      })
-    )
-    .subscribe({
-      next: (res: any)=> { 
-        const tmp = this.listOfData;
-        ArrayUtils.remove(tmp, (p : User)=> p.id === index);
-        // this.listOfData.splice(this.listOfData.findIndex(f => f.id === index), 1);
-        this.listOfData = tmp;
-        this.total = 100;
+      .pipe(
+        finalize(() => {
+          this.settingValue.loading = false;
+          this.settingValue.noResult = false;
+        })
+      )
+      .subscribe({
+        next: (res: any) => {
+          const tmp = this.listOfData;
+          Utils.remove(tmp, (p: User) => p.id === index);
+          // this.listOfData.splice(this.listOfData.findIndex(f => f.id === index), 1);
+          this.listOfData = tmp;
+          this.total = this.total - 1;
+        }
       }
-    }
-    );
+      );
   }
 
 
-  
+
 
   constructor(
-    private formBuilder: UntypedFormBuilder, 
-    private service: SharedService) {}
-  
-    ngOnDestroy(): void {
+    private formBuilder: UntypedFormBuilder,
+    private service: SharedService, private router: Router) { }
+
+  ngOnDestroy(): void {
     this.subs.unsubscribe();
   }
 
   ngOnInit(): void {
-    // this.subs.add(
-    //   this.service.getUsers().subscribe(
-    //     (result : any)=>{
-    //       const tmp : User[] = [];
-    //       tmp.push(...result.data!.content!);
-    //       console.log('chargement'+tmp);
-    //       this.displayData = tmp;
-    //     }
-    //   )
-    // )
     this.settingForm = this.formBuilder.group({
       bordered: false,
       loading: true,
-      pagination: false,
+      pagination: true,
       sizeChanger: true,
       title: true,
       header: true,
@@ -138,22 +145,80 @@ export class UsersComponent implements OnInit, OnDestroy {
     });
     this.settingValue = this.settingForm.value;
     this.settingForm.valueChanges.subscribe(value => (this.settingValue = value));
-    this.settingValue.loading = true;
-    // this.listOfData = 
-    this.getUsers();
-    this.settingValue.loading = false;
-    this.settingValue.noResult = false;
+
+    this.searchForm = this.formBuilder.group({
+      lastName: [],
+      firstName: [],
+      username: [],
+      creationDateDebut: [],
+      creationDateFin: [],
+      updateDateDebut: [],
+      updateDateFin: []
+    });
   }
 
 
   onQueryParamsChange(params: NzTableQueryParams): void {
-    console.log(params);
+    this.pageIndex = params.pageIndex;
+    this.pageSize = params.pageSize;
     const { pageSize, pageIndex, sort, filter } = params;
     const currentSort = sort.find(item => item.value !== null);
     const sortField = (currentSort && currentSort.key) || null;
     const sortOrder = (currentSort && currentSort.value) || null;
+    this.getUsers(this.pageIndex, this.pageSize, null, null);
   }
-  
+
+
+  public initCreation(): void {
+    this.displayCreation = true;
+    this.displayList = false;
+    this.displayActions = false;
+
+  }
+
+  public onDoneCreation(done : boolean) {
+    this.displayCreation = false;
+    this.displayList = true;
+    this.displayActions = true;
+  }
+
+  rechercher() {
+    const userName = this.searchForm.value.username;
+    const firstName = this.searchForm.value.firstName;
+    const lastName = this.searchForm.value.lastName;
+    const password = this.searchForm.value.password;
+    const creationDateDebut = this.searchForm.value.creationDateDebut;
+    const creationDateFin = this.searchForm.value.creationDateFin;
+    const updateDateDebut = this.searchForm.value.updateDateDebut;
+    const updateDateFin = this.searchForm.value.updateDateFin;
+    if (Utils.isEmpty(userName) && 
+    Utils.isEmpty(firstName) && 
+    Utils.isEmpty(lastName) && 
+    Utils.isEmpty(creationDateDebut) && 
+    Utils.isEmpty(creationDateFin) && Utils.isEmpty(updateDateDebut) && Utils.isEmpty(updateDateFin)) {
+        Object.values(this.searchForm.controls).forEach(control => {
+          if (control!.invalid) {
+            control!.markAsDirty();
+            control!.updateValueAndValidity({ onlySelf: true });
+          }
+        });      
+    } else {
+       const user :User = new User();
+       user.userName = this.searchForm.value.username;
+       user.firstName = this.searchForm.value.firstName;
+       user.lastName = this.searchForm.value.lastName;
+       this.service.searchUsers(user).subscribe({
+        next:(result:any) =>{
+          this.listOfData = [];
+          this.listOfData.push(...result.data!);
+          this.total = Utils.size(this.listOfData);
+        },
+        error:(err: Error) =>{
+        }
+      });
+    }
+
+  }
 
 }
 

@@ -4,6 +4,7 @@ export class BaseModel {
     disabled?: boolean = true;
     checked?:boolean = true;
     description?:string;
-    creation_date?:Date;
-    update_date?:Date;
+    creationDate?:Date;
+    updateDate?:Date;
+    total?:number;
 } 

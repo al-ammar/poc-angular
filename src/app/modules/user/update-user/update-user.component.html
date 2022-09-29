@@ -1,53 +1,53 @@
 <nz-page-header
 class="site-page-header"
-nzTitle="Création utilisateur"
+nzTitle="Modification utilisateur"
 ></nz-page-header>
 
 <form nz-form [formGroup]="validateForm" 
 (ngSubmit)="submitForm()">
 
 <nz-form-item>
-    <nz-form-label [nzSm]="10" [nzXs]="36" 
+    <nz-form-label [nzSm]="6" [nzXs]="28" 
     nzRequired nzFor="lastname">Nom</nz-form-label>
-    <nz-form-control [nzSm]="10" [nzXs]="36" nzErrorTip="La valeur nom est invalide">
-      <input nz-input formControlName="lastName" id="lastname" />
+    <nz-form-control [nzSm]="6" [nzXs]="28" nzErrorTip="La valeur nom est invalide">
+      <input nz-input [nzSize]="'small'" formControlName="lastName" id="lastname" />
     </nz-form-control>
   </nz-form-item>
 
 <nz-form-item>
-    <nz-form-label [nzSm]="10" [nzXs]="36" 
+    <nz-form-label [nzSm]="6" [nzXs]="28" 
     nzRequired nzFor="firstname">Prénom</nz-form-label>
-    <nz-form-control [nzSm]="10" [nzXs]="36" nzErrorTip="La valeur prénom est invalide">
-      <input nz-input formControlName="firstName" id="firstname" />
+    <nz-form-control [nzSm]="6" [nzXs]="28" nzErrorTip="La valeur prénom est invalide">
+      <input nz-input [nzSize]="'small'" formControlName="firstName" id="firstname" />
     </nz-form-control>
   </nz-form-item>
 
 <nz-form-item>
-    <nz-form-label [nzSm]="10" [nzXs]="36" 
+    <nz-form-label [nzSm]="6" [nzXs]="28"  
     nzRequired nzFor="username">Username</nz-form-label>
-    <nz-form-control [nzSm]="10" [nzXs]="36" nzErrorTip="La valeur username est invalide">
-      <input nz-input formControlName="username" id="username" />
+    <nz-form-control [nzSm]="6" [nzXs]="28"  nzErrorTip="La valeur username est invalide">
+      <input nz-input [nzSize]="'small'" formControlName="username" id="username" />
     </nz-form-control>
   </nz-form-item>
 
   <nz-form-item>
-    <nz-form-label [nzSm]="10" [nzXs]="36"  
+    <nz-form-label [nzSm]="6" [nzXs]="28"  
     nzRequired nzFor="password">Password</nz-form-label>
-    <nz-form-control [nzSm]="10" [nzXs]="36"  nzErrorTip="Le mot de passe est invalide">
-      <input nz-input formControlName="password" id="password" type="password"/>
+    <nz-form-control [nzSm]="6" [nzXs]="28"  nzErrorTip="Le mot de passe est invalide">
+      <input nz-input [nzSize]="'small'" formControlName="password" id="password" type="password"/>
     </nz-form-control>
   </nz-form-item>
   <nz-form-item>
-    <nz-form-label [nzSm]="10" [nzXs]="36"  
+    <nz-form-label [nzSm]="6" [nzXs]="28"  
      nzFor="creationDate">Date de création</nz-form-label>
-    <nz-form-control [nzSm]="10" [nzXs]="36"  >
+    <nz-form-control [nzSm]="6" [nzXs]="28"  >
       <nz-date-picker formControlName="creationDate" id="creationDate"  ></nz-date-picker>
     </nz-form-control>
   </nz-form-item>
   <nz-form-item>
-    <nz-form-label [nzSm]="10" [nzXs]="36" 
+    <nz-form-label [nzSm]="6" [nzXs]="28" 
      nzFor="updateDate">Date de mise à jour</nz-form-label>
-    <nz-form-control [nzSm]="10" [nzXs]="36" >
+    <nz-form-control [nzSm]="6" [nzXs]="28" >
         <nz-date-picker formControlName="updateDate" id="updateDate"  ></nz-date-picker>
     </nz-form-control>
   </nz-form-item>

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import {mergeMap, retryWhen, shareReplay } from 'rxjs/operators';
 import { BehaviorSubject, Observable, range, timer, zip } from 'rxjs';
+import { User } from '../models/user';
 
 @Injectable({
   providedIn: 'root'
@@ -37,15 +38,6 @@ export class AuthService {
   private backoff(maxentries = 2, ms =150) {
     return (src: Observable<any>) => src.pipe(retryWhen(attempt => zip(range(1, maxentries), attempt).pipe(mergeMap(([i])=> timer(i * ms)))
     ));
-  }
-}
-
-export class User {
-  email: string;
-  password: string;
-  constructor(e: string, p: string){
-    this.email = e;
-    this.password = p;
   }
 }
 

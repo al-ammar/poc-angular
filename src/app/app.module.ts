@@ -1,5 +1,5 @@
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { NgModule } from '@angular/core';
+import { LOCALE_ID, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 
@@ -54,6 +54,7 @@ registerLocaleData(fr);
   ],
   providers: [{provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }, 
     { provide: NZ_I18N, useValue: fr_FR },
+    {provide: LOCALE_ID, useValue: 'fr' },
     { provide: NZ_ICONS, useValue: icons },],
   bootstrap: [AppComponent]
 })

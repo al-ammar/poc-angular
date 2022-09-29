@@ -41,7 +41,7 @@ export class LoginComponent implements OnInit {
       this.auth.login(val.email, val.password).subscribe(
         (res: SessionUser)=>{
           console.log('Appel Login rest');
-          localStorage.setItem('user', res.email);
+          localStorage.setItem('user', res.userName!);
           localStorage.setItem('isAuth', String(res.authenticated));  
           this.auth.canUserAccess(res.authenticated);
         }
