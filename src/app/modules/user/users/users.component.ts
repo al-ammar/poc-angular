@@ -1,12 +1,21 @@
+
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { NzTableLayout, NzTablePaginationPosition, NzTablePaginationType, NzTableQueryParams, NzTableSize } from 'ng-zorro-antd/table';
-import { finalize, Subscription } from 'rxjs';
+import { catchError, finalize, map, Subscription } from 'rxjs';
 import { User } from 'src/app/models/user';
+import { UserCriteria } from 'src/app/models/UserCriteria';
 import { SharedService } from 'src/app/services/shared.service';
 import { Utils } from 'src/app/utils/ArrayUtils';
+import { AngularCsv } from 'angular-csv-ext/dist/Angular-csv';
+import { Setting } from 'src/app/models/settings';
+import { NzNotificationService } from 'ng-zorro-antd/notification';
+import * as FileSaver from 'file-saver';
+import { DomSanitizer } from '@angular/platform-browser';
+import { FileUtils } from 'src/app/utils/FileUtils';
+
 
 @Component({
   selector: 'app-users',
@@ -14,6 +23,7 @@ import { Utils } from 'src/app/utils/ArrayUtils';
   styleUrls: ['./users.component.scss']
 })
 export class UsersComponent implements OnInit, OnDestroy {
+
   public user?: User;
   panel = 'Actions';
   panelRecherche = 'Recherche personnalisée';
@@ -34,6 +44,7 @@ export class UsersComponent implements OnInit, OnDestroy {
   settingValue!: Setting;
 
   private subs: Subscription = new Subscription();
+
 
 
   currentPageDataChange($event: User[]): void {
@@ -66,9 +77,14 @@ export class UsersComponent implements OnInit, OnDestroy {
         finalize(() => {
           this.settingValue.loading = false;
           this.settingValue.noResult = false;
+        }),
+        catchError((error: Error) => {
+          this.notification.error("Erreur lors de la recherche utilisateurs", error.message);
+          throw error;
         })
       ).subscribe({
         next: (result: any) => {
+          console.log(result);
           this.listOfData = [];
           this.listOfData.push(...result.data!.content!);
           this.total = result.data!.totalElements!;
@@ -115,6 +131,8 @@ export class UsersComponent implements OnInit, OnDestroy {
 
 
   constructor(
+    private sanitizer: DomSanitizer,
+    private notification: NzNotificationService ,
     private formBuilder: UntypedFormBuilder,
     private service: SharedService, private router: Router) { }
 
@@ -174,15 +192,59 @@ export class UsersComponent implements OnInit, OnDestroy {
     this.displayList = false;
     this.displayActions = false;
 
+   }
+
+  public downloadFile(id: string){
+    let u = this.listOfData.find(data => data!.id! === id);
+    // const file = new Blob([u!.content], {type: 'image/png;base64'});
+    // const file = new Blob([u!.content]);
+    // FileSaver.saveAs(file, "file.png");
+    
+    // bf : Buffer = Buffer.from(u!.content, 'base64');
+    // console.log(atob(u!.content));
+    // console.log(btoa(u!.content));
+
+    // let reader = new FileReader();
+        // a.download = 'filekk.jpeg';
+        // const STRING_CHAR = u!.content.reduce((data : any, byte : any) => {
+        //   return data + String.fromCharCode(byte);
+        //   }, '');
+    // reader.readAsBinaryString(blob); // converts the blob to base64 and calls onload
+    // let link = document.createElement('a');
+    // link.download = 'filekk.jpeg';
+    // reader.onload = function() {
+    // link.href = reader.result!.toString(); // data url
+    // link.click();
+    
+    // };
+
+    // let a = document.createElement('a');
+    // a.href = URL.createObjectURL(blob);
+    // a.download = 'filekk.jpeg';
+    // a.click();
+    // a.remove();
+    let file = new Blob([u!.content!], { type: 'image/jpeg' });            
+    FileSaver.saveAs(FileUtils.base64ToBlob(u!.content), 'download.png');
+  
   }
 
-  public onDoneCreation(done : boolean) {
+  getBase64(data: Blob): Promise<string | ArrayBuffer | null> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsBinaryString(new Blob([data]));
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = error => reject(error);
+    });
+  }
+
+  public onDoneCreation(done: boolean) {
     this.displayCreation = false;
     this.displayList = true;
     this.displayActions = true;
   }
 
   rechercher() {
+    this.settingValue.loading = true;
     const userName = this.searchForm.value.username;
     const firstName = this.searchForm.value.firstName;
     const lastName = this.searchForm.value.lastName;
@@ -191,54 +253,64 @@ export class UsersComponent implements OnInit, OnDestroy {
     const creationDateFin = this.searchForm.value.creationDateFin;
     const updateDateDebut = this.searchForm.value.updateDateDebut;
     const updateDateFin = this.searchForm.value.updateDateFin;
-    if (Utils.isEmpty(userName) && 
-    Utils.isEmpty(firstName) && 
-    Utils.isEmpty(lastName) && 
-    Utils.isEmpty(creationDateDebut) && 
-    Utils.isEmpty(creationDateFin) && Utils.isEmpty(updateDateDebut) && Utils.isEmpty(updateDateFin)) {
-        Object.values(this.searchForm.controls).forEach(control => {
-          if (control!.invalid) {
-            control!.markAsDirty();
-            control!.updateValueAndValidity({ onlySelf: true });
-          }
-        });      
+    if (Utils.isEmpty(userName) &&
+      Utils.isEmpty(firstName) &&
+      Utils.isEmpty(lastName) &&
+      Utils.isEmpty(creationDateDebut) &&
+      Utils.isEmpty(creationDateFin) && Utils.isEmpty(updateDateDebut) && Utils.isEmpty(updateDateFin)) {
+      Object.values(this.searchForm.controls).forEach(control => {
+        if (control!.invalid) {
+          control!.markAsDirty();
+          control!.updateValueAndValidity({ onlySelf: true });
+        }
+      });
+      this.settingValue.loading = false;
     } else {
-       const user :User = new User();
-       user.userName = this.searchForm.value.username;
-       user.firstName = this.searchForm.value.firstName;
-       user.lastName = this.searchForm.value.lastName;
-       this.service.searchUsers(user).subscribe({
-        next:(result:any) =>{
+      const user: UserCriteria = new UserCriteria();
+      user.userName = this.searchForm.value.username;
+      user.firstName = this.searchForm.value.firstName;
+      user.lastName = this.searchForm.value.lastName;
+      user.creationDateDebut = this.searchForm.value.creationDateDebut;
+      user.creationDateFin = this.searchForm.value.creationDateFin;
+      this.service.searchUsers(user)
+      .pipe(map((value: any)=> {
+        value.data.map((d: User) => {
+        d.url = 'z';
+        return d;
+        });
+        return value;
+      }))
+      .subscribe({
+        next: (result: any) => {
           this.listOfData = [];
           this.listOfData.push(...result.data!);
           this.total = Utils.size(this.listOfData);
         },
-        error:(err: Error) =>{
+        error: (err: Error) => {
+        },
+        complete: () => {
+          this.settingValue.loading = false;
         }
       });
     }
-
   }
 
+  public exportCSV() {
+    var options = {
+      fieldSeparator: ',',
+      quoteStrings: '"',
+      decimalseparator: '.',
+      showLabels: true,
+      showTitle: true,
+      title: 'Liste des utilisateurs',
+      useBom: true,
+      noDownload: true,
+      headers: ["ID", "Username", "Lastname", "Firstname"],
+      useHeader: false,
+      nullToEmptyString: true,
+    };
+
+    return new AngularCsv(this.listOfData, 'export_csv', options);
+  }
 }
 
-interface Setting {
-  bordered: boolean;
-  loading: boolean;
-  pagination: boolean;
-  sizeChanger: boolean;
-  title: boolean;
-  header: boolean;
-  footer: boolean;
-  expandable: boolean;
-  checkbox: boolean;
-  fixHeader: boolean;
-  noResult: boolean;
-  ellipsis: boolean;
-  simple: boolean;
-  size: NzTableSize;
-  tableScroll: string;
-  tableLayout: NzTableLayout;
-  position: NzTablePaginationPosition;
-  paginationType: NzTablePaginationType;
-}

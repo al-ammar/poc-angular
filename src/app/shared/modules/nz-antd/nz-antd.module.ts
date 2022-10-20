@@ -29,12 +29,14 @@ import {NzPopoverModule} from 'ng-zorro-antd/popover';
 import {NzSliderModule} from 'ng-zorro-antd/slider';
 import {NzProgressModule} from 'ng-zorro-antd/progress';
 import {NzBreadCrumbModule} from 'ng-zorro-antd/breadcrumb';
+import {NzUploadModule} from 'ng-zorro-antd/upload';
 
 
 @NgModule({
   declarations: [],
   imports: [
     CommonModule,
+    NzUploadModule,
     NzButtonModule,
     NzBreadCrumbModule,
     NzFormModule,
@@ -93,7 +95,8 @@ import {NzBreadCrumbModule} from 'ng-zorro-antd/breadcrumb';
     NzPopoverModule,
     NzSliderModule,
     NzProgressModule,
-    NzBreadCrumbModule
+    NzBreadCrumbModule,
+    NzUploadModule,
 ]
 })
 export class NzAntdModule { }

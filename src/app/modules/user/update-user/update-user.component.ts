@@ -15,7 +15,7 @@ export class UpdateUserComponent implements OnInit {
   @Input() userToUpdate?: User ;
   public validateForm!: UntypedFormGroup;
   @Output() doneUpdate = new EventEmitter<boolean>(false);
-
+  public imgurl:any;
   constructor(private fb: UntypedFormBuilder,
     private service: SharedService,
     private route: Router,
@@ -31,6 +31,12 @@ export class UpdateUserComponent implements OnInit {
       updateDate:[this.userToUpdate?.updateDate]
 
     });
+    // const reader = new FileReader();
+    // reader.onload = (e) => this.imgurl = e.target!.result;
+    // reader.readAsDataURL(new Blob([this.userToUpdate?.content]));
+    // var base64 = this.userToUpdate?.content.toString('base64');
+    // this.imgurl = 'data:image/jpeg;base64,' + base64; // use this in <img src="..."> binding
+        
   }
 
   submitForm(){

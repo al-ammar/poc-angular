@@ -1,8 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { fromEvent, Observable, Subscription } from 'rxjs';
+import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
+import { combineLatest, fromEvent, map, Observable, startWith, Subscription } from 'rxjs';
 import { AuthService, SessionUser } from './services/auth.service';
 import { HostListener } from '@angular/core';
+import { KeycloakOptions, KeycloakService } from 'keycloak-angular';
 
 @Component({
   selector: 'app-root',
@@ -17,75 +18,116 @@ export class AppComponent implements OnInit, OnDestroy{
   isCollapse = false;
   offlineEvent = fromEvent(window, 'unload');
   private subs: Subscription = new Subscription();
-
-  constructor(private auth: AuthService, private router: Router){
+  private queryParam$ : Observable<QueryInt> = new Observable<QueryInt>();
+  private user: string = 'user';
+  constructor(
+    private activatedRouted: ActivatedRoute,
+    private auth: AuthService, 
+    private router: Router){
 
   }
   ngOnDestroy(): void {
-    console.info('destroy isAuth');
-    // localStorage.removeItem('isAuth');
     this.subs.unsubscribe();
   }
 
   ngOnInit(): void {
-    console.info('canUserAccess'+this.canUserAccess);
-    console.info('showFrame'+this.showIFrame);
+  }
+  // this.queryParam$ = this.activatedRouted.queryParamMap.pipe(
+  //   startWith(convertToParamMap([])),
+  //   map(q=>({has: (q.has(this.user)), user: (q.get(this.user)!)}))
+  // );
+  // this.auth.isLoggedIn().then(result => {
+  //   console.log(result);
+  //   this.canUserAccess = result;
+  // });
+    // try{
+    // this.auth.init().then(
+    //   r => {
+    //     console.log(r);
+    //     localStorage.setItem('init', ''+r);
+    //     localStorage.setItem('isAuth', 'true');
+    //     // this.auth.canUserAccess(true);
+    //   }
+    // );
+    // }catch(error: any){
+    //   console.log(error);
+    // }
+    
+    // try{
+    // this.auth.loginKeycloak();
+    //    console.log('login');
+    //     // localStorage.setItem('login', ''+result);
+    //     // localStorage.setItem('isAuth', 'true');
+    //    this.canUserAccess = true;
+    // }catch(error: any){
+    //   console.log(error);
+    // }
 
-    if(this.canUserAccess){
-      this.router.navigate(['./']).then();
-      this.canUserAccess = true;
-      this.showIFrame = false;
-    }
-    this.subs.add(this.offlineEvent.subscribe(e => {
-      console.log('Offline...');
-    }));
-    this.subs.add(
-      this.auth.canAccess$.subscribe({
-        next: (res) => {
-          console.log('canAccess$ subscribe...'+res);
-          this.canUserAccess= res; 
-          if(!res){
+      
+      
 
-            this.showIFrame = true;
-            console.log('showIFrame :' +this.showIFrame);
+    
+    // this.subs.add(this.offlineEvent.subscribe(e => {
+    //   console.log('Offline...');
+    // }));
+    // this.subs.add(
+    //   this.auth.canAccess$.subscribe({
+    //     next: (res) => {
+    //       this.canUserAccess= res; 
+    //       if(!res){
+    //         this.showIFrame = true;
+    //         // this.router.navigate(['./login']).then();
+    //       } else{
+    //         this.showIFrame = false;
+    //         // this.router.navigate(['./accueil']).then();
+    //     } 
+    //     },
+    //     error : (err)=> {
+    //       console.error(err);
+    //       localStorage.setItem('errorMessage', err);
+    //       this.showIFrame = true;    
+    //     } ,
+    //     complete: ()=> {
+    //       console.log('login competed');
+    //       console.log(this.canUserAccess);
+    //     }
+      // }
+      //     ));
+    // this.subs.add(
+    //   combineLatest([ this.queryParam$, this.auth.canAccess$]).subscribe(
+    //     res=> {
+    //       console.log('this.auth.canAccess$');
+    //       console.log(res[0]);
+    //       console.log('this.queryParam$');
+    //       console.log(res[1]);
+    //     }
+    //   )
+    // );
+        // if(localStorage.getItem('isAuth') === 'true'){
+        //   this.canUserAccess = true;
+        //   this.showIFrame = false;
+        // }
+      
+     
 
-            // this.router.navigate(['./login']).then();
-          } else{
-            this.showIFrame = false;
-            console.log('showIFrame :' +this.showIFrame);
-            // this.router.navigate(['./accueil']).then();
-        } 
-        },
-        error : (err)=> {
-          console.error(err);
-          localStorage.setItem('errorMessage', err);
-          this.showIFrame = true;    
-        } ,
-        complete: ()=> {
-          console.log('login competed');
-          console.log(this.canUserAccess);
-        }
-      }
-          ));
-        if(localStorage.getItem('isAuth') === 'true'){
-          this.canUserAccess = true;
-          this.showIFrame = false;
-        }
-      }  
-
-      @HostListener('window:unload')
-      onUnload(): void {
-       console.log('onUnload');
-      //  localStorage.removeItem('isAuth');
-      }
+      // @HostListener('window:unload')
+      // onUnload(): void {
+      //  console.log('onUnload');
+      // //  localStorage.removeItem('isAuth');
+      // }
 
 
       logout(){
+        this.auth.logout();
         localStorage.removeItem('isAuth');
-        this.auth.canUserAccess(false);
-        this.router.navigate(['./']).then();
+        // this.auth.canUserAccess(false);
+        // this.router.navigate(['./']).then();
       }
 
 }
 
+interface QueryInt {
+  has: boolean;
+  user: string;
+}
 

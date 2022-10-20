@@ -6,4 +6,12 @@ export class User extends BaseModel{
     password?: string;
     lastName?:string;
     firstName?:string;
+    pieces?: Document[];
+    content?:BlobPart;
+    url?: any;
+}
+
+export class Document {
+    name?: string;
+    data?: any;
 }

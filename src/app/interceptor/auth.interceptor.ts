@@ -18,6 +18,13 @@ export class AuthInterceptor implements HttpInterceptor {
   }
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+    // const token = this.auth.getToken() || '';
+    // request.clone({
+    //   setHeaders : {
+    //     'Authorization' : 'Bearer' + token
+    //   }
+    // });
+
     if (request.url.includes('assets/speed/image.7z')) {
       return next.handle(request);
     }
@@ -35,7 +42,8 @@ export class AuthInterceptor implements HttpInterceptor {
     // });
     return next.handle(request)
     .pipe(
-      catchError((error : HttpErrorResponse) => {
+      catchError((error : any) => {
+       console.log(error);
        console.log(error.error)
        console.log(error.message) ;
        console.log(error.statusText) ;

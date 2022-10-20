@@ -51,6 +51,14 @@ nzTitle="Modification utilisateur"
         <nz-date-picker formControlName="updateDate" id="updateDate"  ></nz-date-picker>
     </nz-form-control>
   </nz-form-item>
+  <nz-form-item>
+
+  <div class='div-img'>
+    <!-- <img class='div-img' src="data:image/png;base64,{{this.userToUpdate?.content}}"/> -->
+    <img class='div-img' src="data:image/png;base64,{{this.userToUpdate?.content}}"/>
+
+  </div>
+  </nz-form-item>
   <nz-form-item nz-row class="register-area">
     <nz-form-control [nzSpan]="14" [nzOffset]="6">
       <button nz-button nzType="primary">Save</button>
@@ -58,3 +66,4 @@ nzTitle="Modification utilisateur"
     </nz-form-control>
   </nz-form-item>
   </form>
+

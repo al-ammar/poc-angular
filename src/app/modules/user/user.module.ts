@@ -13,13 +13,16 @@ import { IconsProviderModule } from 'src/app/icons-provider.module';
 import { NzAntdModule } from 'src/app/shared/modules/nz-antd/nz-antd.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UpdateUserComponent } from './update-user/update-user.component';
+import { UploadDocumentComponent } from 'src/app/shared/components/upload-document/upload-document.component';
+import { UpperPatternDirective } from 'src/app/directives/upper-pattern.directive';
+import { SharedDirectiveModule } from 'src/app/directives/shared-directive/shared-directive.module';
 
 
 @NgModule({
   declarations: [
     CreationUserComponent,
     UsersComponent,
-    UpdateUserComponent
+    UpdateUserComponent,
   ],
   imports: [
     FormsModule,
@@ -30,6 +33,7 @@ import { UpdateUserComponent } from './update-user/update-user.component';
     NzLayoutModule,
     NzMenuModule,
     NzAntdModule,
+    SharedDirectiveModule
   ]
 })
 export class UserModule { }

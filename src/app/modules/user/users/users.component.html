@@ -6,6 +6,9 @@
       [nzDisabled]="false">
         <button nz-button class="login-form-button login-form-margin" 
         [nzType]="'primary'" (click)="initCreation()">Créer utilisateur</button>
+        <button nz-button class="login-form-button login-form-margin" 
+        [nzType]="'primary'" (click)="exportCSV()">Exporter CSV</button>
+
     </nz-collapse-panel>
 </nz-collapse>
 </div>
@@ -96,6 +99,7 @@
           <th  nzColumnKey="username" [nzSortFn]="true" >Username</th>
           <th>Date de création</th>
           <th>Date de mise à jour</th>
+          <th>Contenu</th>
           <th [nzRight]="fixedColumn">Action</th>
         </tr>
       </thead>
@@ -111,8 +115,12 @@
             <td>{{ data.lastName! }}</td>
             <td>{{ data.firstName! }}</td>
             <td>{{ data.userName! }}</td>
+            
             <td [nzEllipsis]="settingValue.ellipsis">{{ data.creationDate | date:'medium' }}</td>
             <td [nzEllipsis]="settingValue.ellipsis">{{ data.updateDate | date:'medium' }}</td>
+            <td>{{data.url}} 
+            <a (click)="downloadFile(data.id!)">Télécharger</a>
+          </td>
             <td [nzRight]="fixedColumn" [nzEllipsis]="settingValue.ellipsis">
                    <nz-divider nzType="vertical"></nz-divider>
 

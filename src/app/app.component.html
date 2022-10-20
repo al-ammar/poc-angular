@@ -1,8 +1,9 @@
-<nz-layout *ngIf="canUserAccess && !showIFrame">
+<!-- *ngIf="canUserAccess && !showIFrame" -->
+ <nz-layout>
   <nz-sider nzCollapsible nzWidth="200px">
     <div class="logo"></div>
     <ul nz-menu nzTheme="dark" nzMode="inline">
-      <li nz-menu-item [routerLink]="['/']"  >
+      <li nz-menu-item [routerLink]="['/']" >
         <span nz-icon nzType="pie-chart"></span>
         <span>Accueil</span>
       </li>
@@ -29,8 +30,5 @@
     </nz-content>
     <nz-footer>Design ©2022 Implement By @l@@</nz-footer>
   </nz-layout>
-</nz-layout>
+</nz-layout> 
 
-<div *ngIf="showIFrame && !canUserAccess">
-  <app-login></app-login>
-</div>

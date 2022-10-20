@@ -9,48 +9,86 @@ nzTitle="Création utilisateur"
 <nz-form-item>
     <nz-form-label [nzSm]="10" [nzXs]="36" 
     nzRequired nzFor="lastname">Nom</nz-form-label>
-    <nz-form-control [nzSm]="10" [nzXs]="36" nzErrorTip="La valeur nom est invalide">
-      <input nz-input formControlName="lastName" id="lastname" />
+    <nz-form-control [nzSm]="10" [nzXs]="36" [nzErrorTip]="errorTip">
+      <input nz-input   formControlName="lastName"  >
+      <ng-template #errorTip>
+        {{ getErrors(fieldType.lastName) }}
+      </ng-template>
+    
     </nz-form-control>
   </nz-form-item>
 
 <nz-form-item>
     <nz-form-label [nzSm]="10" [nzXs]="36" 
     nzRequired nzFor="firstname">Prénom</nz-form-label>
-    <nz-form-control [nzSm]="10" [nzXs]="36" nzErrorTip="La valeur prénom est invalide">
-      <input nz-input formControlName="firstName" id="firstname" />
+    <nz-form-control [nzSm]="10" [nzXs]="36" [nzErrorTip]="errorTipfirstName">
+      <input nz-input  formControlName="firstName"  >
+      <ng-template #errorTipfirstName>
+        {{ getErrors('firstName') }}
+      </ng-template>
     </nz-form-control>
   </nz-form-item>
 
 <nz-form-item>
     <nz-form-label [nzSm]="10" [nzXs]="36" 
-    nzRequired nzFor="username">Username</nz-form-label>
-    <nz-form-control [nzSm]="10" [nzXs]="36" nzErrorTip="La valeur username est invalide">
-      <input nz-input formControlName="username" id="username" />
+    nzRequired nzFor="usernameField">Username</nz-form-label>
+    <nz-form-control [nzSm]="10" [nzXs]="36" [nzErrorTip]="errorTipusernameField">
+      <input nz-input  formControlName="usernameField"  >
+      <ng-template #errorTipusernameField>
+        {{ getErrors(fieldType.usernameField) }}
+      </ng-template>
     </nz-form-control>
   </nz-form-item>
 
   <nz-form-item>
     <nz-form-label [nzSm]="10" [nzXs]="36"  
-    nzRequired nzFor="password">Password</nz-form-label>
-    <nz-form-control [nzSm]="10" [nzXs]="36"  nzErrorTip="Le mot de passe est invalide">
-      <input nz-input formControlName="password" id="password" type="password"/>
+    nzRequired  nzFor="passwordField">Password</nz-form-label>
+    <nz-form-control [nzSm]="10" [nzXs]="36"  [nzErrorTip]="errorTippasswordField">
+      <input nz-input  formControlName="passwordField"  >
+      <ng-template #errorTippasswordField>
+        {{ getErrors(fieldType.passwordField) }}
+      </ng-template>
     </nz-form-control>
   </nz-form-item>
   <nz-form-item>
     <nz-form-label [nzSm]="10" [nzXs]="36"  
-     nzFor="creationDate">Date de création</nz-form-label>
-    <nz-form-control [nzSm]="10" [nzXs]="36"  >
-      <nz-date-picker formControlName="creationDate" id="creationDate"  ></nz-date-picker>
+    nzRequired nzFor="creationDate">Date de création</nz-form-label>
+    <nz-form-control [nzSm]="10" [nzXs]="36"  [nzErrorTip]="errorTipCreationDate" >
+      <nz-date-picker formControlName="creationDate"   >
+      <ng-template #errorTipCreationDate>
+        {{ getErrors(fieldType.creationDate) }}
+      </ng-template>
+      </nz-date-picker>
     </nz-form-control>
   </nz-form-item>
   <nz-form-item>
     <nz-form-label [nzSm]="10" [nzXs]="36" 
-     nzFor="updateDate">Date de mise à jour</nz-form-label>
-    <nz-form-control [nzSm]="10" [nzXs]="36" >
-        <nz-date-picker formControlName="updateDate" id="updateDate"  ></nz-date-picker>
-    </nz-form-control>
+    nzRequired nzFor="updateDate">Date de mise à jour</nz-form-label>
+    <nz-form-control [nzSm]="10" [nzXs]="36" [nzErrorTip]="errorTipUpdateDate" >
+        <nz-date-picker formControlName="updateDate"   ></nz-date-picker>
+        <ng-template #errorTipUpdateDate>
+          {{ getErrors(fieldType.updateDate) }}
+        </ng-template>
+      </nz-form-control>
   </nz-form-item>
+  <div style="color:red;float:center;margin:auto;">
+    {{messagesError}}
+  </div>
+  <nz-form-item>
+    <nz-upload
+    class="row col-11"
+    nzType="drag"
+    [(nzFileList)]="fileList"
+    [nzBeforeUpload]="beforeUpload"
+    style="width:100%;height:80%;">
+    <div class="ant-upload-drag-icon">
+      <i nz-icon nzType="inbox"></i>
+    </div>
+    <label class="ant-upload-text">Cliquer ou déposer des fichiers</label> 
+    </nz-upload>
+
+  </nz-form-item>
+
   <nz-form-item nz-row class="register-area">
     <nz-form-control [nzSpan]="14" [nzOffset]="6">
       <button nz-button nzType="primary">Save</button>
@@ -58,3 +96,7 @@ nzTitle="Création utilisateur"
     </nz-form-control>
   </nz-form-item>
   </form>
+
+
+
+

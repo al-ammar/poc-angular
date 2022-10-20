@@ -1,5 +1,5 @@
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { LOCALE_ID, NgModule } from '@angular/core';
+import { APP_INITIALIZER,  LOCALE_ID, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 
@@ -22,6 +22,8 @@ import { NZ_ICONS } from 'ng-zorro-antd/icon';
 import { IconDefinition } from '@ant-design/icons-angular';
 import * as AllIcons from '@ant-design/icons-angular/icons';
 import { UserModule } from './modules/user/user.module';
+import { LoginModule } from './modules/login/login/login.module';
+import { KeycloakAngularModule, KeycloakService } from 'keycloak-angular';
 
 const antDesignIcons = AllIcons as {
   [key: string]: IconDefinition;
@@ -31,6 +33,24 @@ const icons: IconDefinition[] = Object.keys(antDesignIcons).map(key => antDesign
 
 registerLocaleData(fr);
 
+
+function initializeKeycloak(keycloak: KeycloakService) {
+  return () =>
+    keycloak.init({
+      config: {
+        url: 'http://localhost:8080',
+        realm: 'frontend',
+        clientId: 'front'
+      },
+      initOptions: {
+        // onLoad: 'check-sso',
+        onLoad:'login-required',
+        checkLoginIframe: false,
+        // silentCheckSsoRedirectUri:
+        //   window.location.origin + '/assets/silent-check-sso.html'
+      }
+    });
+}
 
 @NgModule({
   declarations: [
@@ -50,13 +70,23 @@ registerLocaleData(fr);
     NzLayoutModule,
     NzMenuModule,
     NzAntdModule,
-    UserModule
+    UserModule,
+    LoginModule,
+    KeycloakAngularModule
   ],
   providers: [{provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }, 
     { provide: NZ_I18N, useValue: fr_FR },
     {provide: LOCALE_ID, useValue: 'fr' },
-    { provide: NZ_ICONS, useValue: icons },],
+    { provide: NZ_ICONS, useValue: icons },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeKeycloak,
+      multi: true,
+      deps: [KeycloakService]
+    }],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
-// 
+export class AppModule{ 
+
+}
+// platformBrowserDynamic().bootstrapModule(AppModule);
