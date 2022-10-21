@@ -3,7 +3,7 @@ import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { combineLatest, fromEvent, map, Observable, startWith, Subscription } from 'rxjs';
 import { AuthService, SessionUser } from './services/auth.service';
 import { HostListener } from '@angular/core';
-import { KeycloakOptions, KeycloakService } from 'keycloak-angular';
+import { KeycloakEventType, KeycloakOptions, KeycloakService } from 'keycloak-angular';
 import { ActivatedRouteSnapshot } from '@angular/router';
 
 @Component({
@@ -24,15 +24,33 @@ export class AppComponent implements OnInit, OnDestroy{
   constructor(
     private activatedRouted: ActivatedRoute,
     private auth: AuthService, 
-    private router: Router){
-
-  }
+    private router: Router,
+    private keycloak : KeycloakService
+    ){}
   ngOnDestroy(): void {
     this.auth.logout();
     this.subs.unsubscribe();
   }
 
   ngOnInit(): void {
+    this.subs.add(
+      this.keycloak.keycloakEvents$.subscribe({
+        next: (e) => {
+          if (e.type === KeycloakEventType.OnTokenExpired) {
+            console.log('Refresh token');
+            this.keycloak.updateToken(20);
+          }  
+          else if (e.type === KeycloakEventType.OnAuthLogout) {
+            console.log('Deconnexion');
+            this.router.navigate(['./forbiden']).then();
+          }
+          else if (e.type === KeycloakEventType.OnAuthRefreshSuccess) {
+            console.log('Authentification succes');            
+          }
+        }
+      }
+    )
+  );
   }
   // this.queryParam$ = this.activatedRouted.queryParamMap.pipe(
   //   startWith(convertToParamMap([])),

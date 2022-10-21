@@ -7,9 +7,14 @@ import { ForbidenComponent } from './modules/forbiden/forbiden.component';
 
 
 const routes: Routes = [
-  // {path:'', redirectTo:'home', pathMatch:'full'},
+  {
+    path:'', 
+    redirectTo:'home', 
+    pathMatch:'full'
+  },
   { 
-    path: 'home', component:AppComponent,   
+    path: 'home', 
+    loadChildren: () => import('./modules/home/home.module').then(m => m.HomeModule),
     data: {roles : ['user','admin']},
     canActivate: [AuthGuard],  
   },

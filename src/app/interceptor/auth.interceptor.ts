@@ -23,6 +23,7 @@ export class AuthInterceptor implements HttpInterceptor {
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     
     if(!this.keycloak.isLoggedIn()){
+      console.log('Authentification forcée');
       this.keycloak.login();
     }
     if(this.keycloak.isTokenExpired()){

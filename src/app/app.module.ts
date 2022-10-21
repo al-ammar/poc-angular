@@ -26,6 +26,7 @@ import { LoginModule } from './modules/login/login/login.module';
 import { KeycloakAngularModule, KeycloakService } from 'keycloak-angular';
 import { AuthGuard } from './guards/auth.guard';
 import { AuthorizationsGuard } from './guards/autirizations.guard';
+import { HomeModule } from './modules/home/home.module';
 
 const antDesignIcons = AllIcons as {
   [key: string]: IconDefinition;
@@ -76,7 +77,8 @@ function initializeKeycloak(keycloak: KeycloakService) {
     NzAntdModule,
     KeycloakAngularModule,
     UserModule,
-    LoginModule
+    LoginModule,
+    HomeModule
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }, 
