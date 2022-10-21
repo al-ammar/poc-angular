@@ -126,8 +126,6 @@ export class CreationUserComponent implements OnInit {
 
 
   public getErrors(s: string): any {
-    console.log('getError');
-    console.log(s);
     let control = this.validateForm.get(s);
     return FormValidationService.validate(control!);
   }

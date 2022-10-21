@@ -84,7 +84,6 @@ export class UsersComponent implements OnInit, OnDestroy {
         })
       ).subscribe({
         next: (result: any) => {
-          console.log(result);
           this.listOfData = [];
           this.listOfData.push(...result.data!.content!);
           this.total = result.data!.totalElements!;

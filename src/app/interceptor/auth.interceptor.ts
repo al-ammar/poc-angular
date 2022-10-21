@@ -9,37 +9,35 @@ import {
 import { catchError, Observable } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
+import { KeycloakService } from 'keycloak-angular';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
 
-  constructor(private auth: AuthService, private route: Router) {
+  private token : string ='';
 
+  constructor(private keycloak : KeycloakService, private auth: AuthService, private route: Router) {
+    keycloak.getToken().then(r => this.token = r);
   }
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    // const token = this.auth.getToken() || '';
-    // request.clone({
-    //   setHeaders : {
-    //     'Authorization' : 'Bearer' + token
-    //   }
-    // });
+    
+    if(!this.keycloak.isLoggedIn()){
+      this.keycloak.login();
+    }
+    if(this.keycloak.isTokenExpired()){
+      console.log('Token expire => refresh');
+      this.keycloak.getToken().then(r => this.token = r);
+    }
+    request.clone({
+      setHeaders : {
+        'Authorization' : 'Bearer' + this.token
+      }
+    });
 
     if (request.url.includes('assets/speed/image.7z')) {
       return next.handle(request);
     }
-    // this.auth.canAccess$.subscribe(res => {
-    //   if(res === true){
-    //     next.handle(request);
-    //   }
-    //   this.route.navigate(['./login']).then();
-    //   return;
-    // },
-    // err => {
-    //   console.log(err);
-    //   localStorage.setItem('errorMessage', err);
-    //   this.route.navigate(['./login']).then();
-    // });
     return next.handle(request)
     .pipe(
       catchError((error : any) => {

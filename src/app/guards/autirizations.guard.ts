@@ -8,29 +8,26 @@ import { Observable } from "rxjs";
 @Injectable({
     providedIn: 'root'
   })
-export class AuthGuard extends KeycloakAuthGuard  implements CanActivate{
-    
+export class AuthorizationsGuard  implements CanActivate{
+    private roles : string[] = [];
+
     constructor(
-        protected override readonly router: Router,
+        protected readonly router: Router,
         protected readonly keycloak: KeycloakService
       ) {
-        super(router, keycloak);
-    }
-
-    public async isAccessAllowed(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean | UrlTree> {
-        if(!this.authenticated){
-            await this.keycloakAngular.login({                
-                redirectUri: window.location.origin + state.url,
-            });
-        }
-        
+        this.roles = this.keycloak.getUserRoles();
+      }
+    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | UrlTree | Promise<boolean | UrlTree> | Observable<boolean | UrlTree> {
         const requiredRoles = route.data['roles'];
+        console.log(requiredRoles);
 
         if(!(requiredRoles instanceof Array) || ( requiredRoles.length === 0)){
             return true;
         }
 
-        return requiredRoles.find((role: string)=> this.roles.includes(role)) != undefined;
-    }
+        return requiredRoles.every((role: string)=> this.roles.includes(role));
+       }
+
+
     
 }

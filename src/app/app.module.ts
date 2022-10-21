@@ -24,6 +24,8 @@ import * as AllIcons from '@ant-design/icons-angular/icons';
 import { UserModule } from './modules/user/user.module';
 import { LoginModule } from './modules/login/login/login.module';
 import { KeycloakAngularModule, KeycloakService } from 'keycloak-angular';
+import { AuthGuard } from './guards/auth.guard';
+import { AuthorizationsGuard } from './guards/autirizations.guard';
 
 const antDesignIcons = AllIcons as {
   [key: string]: IconDefinition;
@@ -48,7 +50,9 @@ function initializeKeycloak(keycloak: KeycloakService) {
         checkLoginIframe: false,
         // silentCheckSsoRedirectUri:
         //   window.location.origin + '/assets/silent-check-sso.html'
-      }
+      },
+      enableBearerInterceptor: true,
+      bearerExcludedUrls: [],
     });
 }
 
@@ -70,11 +74,12 @@ function initializeKeycloak(keycloak: KeycloakService) {
     NzLayoutModule,
     NzMenuModule,
     NzAntdModule,
+    KeycloakAngularModule,
     UserModule,
-    LoginModule,
-    KeycloakAngularModule
+    LoginModule
   ],
-  providers: [{provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }, 
+  providers: [
+    {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }, 
     { provide: NZ_I18N, useValue: fr_FR },
     {provide: LOCALE_ID, useValue: 'fr' },
     { provide: NZ_ICONS, useValue: icons },
@@ -83,7 +88,8 @@ function initializeKeycloak(keycloak: KeycloakService) {
       useFactory: initializeKeycloak,
       multi: true,
       deps: [KeycloakService]
-    }],
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule{ 

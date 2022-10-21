@@ -4,6 +4,7 @@ import { combineLatest, fromEvent, map, Observable, startWith, Subscription } fr
 import { AuthService, SessionUser } from './services/auth.service';
 import { HostListener } from '@angular/core';
 import { KeycloakOptions, KeycloakService } from 'keycloak-angular';
+import { ActivatedRouteSnapshot } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -27,6 +28,7 @@ export class AppComponent implements OnInit, OnDestroy{
 
   }
   ngOnDestroy(): void {
+    this.auth.logout();
     this.subs.unsubscribe();
   }
 
